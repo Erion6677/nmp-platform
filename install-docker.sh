@@ -386,7 +386,7 @@ create_dockerfiles() {
     # 后端 Dockerfile（多阶段构建，从源码编译）
     cat > $INSTALL_DIR/backend/Dockerfile << 'DOCKERFILE'
 # 阶段1: 编译
-FROM golang:1.22-bookworm AS builder
+FROM golang:1.24-bookworm AS builder
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download

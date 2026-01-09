@@ -1,6 +1,6 @@
 # 后端 Dockerfile - 多阶段构建
 # 阶段1: 编译
-FROM golang:1.22-bookworm AS builder
+FROM golang:1.24-bookworm AS builder
 
 WORKDIR /app
 
