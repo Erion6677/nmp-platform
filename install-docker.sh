@@ -383,14 +383,23 @@ download_project() {
 create_dockerfiles() {
     log_info "创建 Docker 构建文件..."
     
-    # 后端 Dockerfile
+    # 后端 Dockerfile（多阶段构建，从源码编译）
     cat > $INSTALL_DIR/backend/Dockerfile << 'DOCKERFILE'
+# 阶段1: 编译
+FROM golang:1.22-bookworm AS builder
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o server ./cmd/server
+
+# 阶段2: 运行
 FROM debian:bookworm-slim
 WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates curl tzdata && rm -rf /var/lib/apt/lists/*
 ENV TZ=Asia/Shanghai
-COPY server.linux-amd64 ./server
+COPY --from=builder /app/server ./server
 RUN chmod +x ./server
 COPY configs ./configs
 RUN mkdir -p /app/logs /opt/nmp/plugins

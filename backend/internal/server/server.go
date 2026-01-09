@@ -107,6 +107,12 @@ func New(cfg *config.Config, logger *zap.Logger) (*Server, error) {
 		return nil, err
 	}
 
+	// 初始化基础数据（权限、角色、管理员用户等）
+	if err := database.SeedData(database.DB); err != nil {
+		logger.Error("Failed to seed database", zap.Error(err))
+		return nil, err
+	}
+
 	// 连接Redis
 	redisClient, err := redis.Connect(&cfg.Redis)
 	if err != nil {
