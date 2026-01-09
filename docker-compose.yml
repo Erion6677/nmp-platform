@@ -1,0 +1,128 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 数据库
+  postgres:
+    image: postgres:15-alpine
+    container_name: nmp-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: nmp
+      POSTGRES_USER: nmp
+      POSTGRES_PASSWORD: NmpSecure2024!
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - nmp-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nmp -d nmp"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis 缓存
+  redis:
+    image: redis:7-alpine
+    container_name: nmp-redis
+    restart: unless-stopped
+    command: redis-server --requirepass NmpRedis2024!
+    volumes:
+      - redis_data:/data
+    networks:
+      - nmp-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "NmpRedis2024!", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # InfluxDB 时序数据库
+  influxdb:
+    image: influxdb:2.7-alpine
+    container_name: nmp-influxdb
+    restart: unless-stopped
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: NmpInflux2024!
+      DOCKER_INFLUXDB_INIT_ORG: nmp
+      DOCKER_INFLUXDB_INIT_BUCKET: monitoring
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: NmpInfluxToken2024SecureRandomString1234567890
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+    networks:
+      - nmp-network
+    healthcheck:
+      test: ["CMD", "influx", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 后端服务
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: nmp-backend
+    restart: unless-stopped
+    environment:
+      - GIN_MODE=release
+    volumes:
+      - ./backend/configs:/app/configs
+      - backend_logs:/app/logs
+      - plugins_data:/opt/nmp/plugins
+    networks:
+      - nmp-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      influxdb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 前端服务
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: nmp-frontend
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    networks:
+      - nmp-network
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  # Nginx 反向代理
+  nginx:
+    image: nginx:alpine
+    container_name: nmp-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - nmp-network
+    depends_on:
+      - frontend
+      - backend
+
+networks:
+  nmp-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  influxdb_data:
+  backend_logs:
+  plugins_data:

@@ -1,0 +1,22 @@
+{
+  "version": "1.0.0",
+  "updated_at": "2026-01-08T12:00:00Z",
+  "plugins": [
+    {
+      "name": "system-backup",
+      "version": "1.0.0",
+      "description": "系统备份与还原 - 支持数据库和配置文件的完整备份",
+      "author": "NMP Team",
+      "icon": "archive",
+      "category": "系统工具",
+      "tags": ["备份", "还原", "系统"],
+      "download_url": "https://github.com/Erion6677/nmp-plugins/releases/download/v1.0.0/system-backup.tar.gz",
+      "homepage": "https://github.com/Erion6677/nmp-plugins",
+      "license": "MIT",
+      "min_version": "1.0.0",
+      "size": 795,
+      "downloads": 0,
+      "updated_at": "2026-01-08"
+    }
+  ]
+}

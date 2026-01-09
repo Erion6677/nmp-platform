@@ -1,0 +1,78 @@
+{
+  "name": "system-backup",
+  "version": "1.0.0",
+  "description": "系统备份与还原 - 支持数据库和配置文件的完整备份",
+  "author": "NMP Team",
+  "dependencies": [],
+  "entry_point": "backup.go",
+  "permissions": [
+    {
+      "resource": "backup",
+      "action": "create",
+      "scope": "all",
+      "description": "创建系统备份"
+    },
+    {
+      "resource": "backup",
+      "action": "read",
+      "scope": "all",
+      "description": "查看备份列表"
+    },
+    {
+      "resource": "backup",
+      "action": "download",
+      "scope": "all",
+      "description": "下载备份文件"
+    },
+    {
+      "resource": "backup",
+      "action": "restore",
+      "scope": "all",
+      "description": "还原系统备份"
+    },
+    {
+      "resource": "backup",
+      "action": "delete",
+      "scope": "all",
+      "description": "删除备份文件"
+    }
+  ],
+  "menus": [
+    {
+      "key": "system-backup",
+      "label": "系统备份",
+      "icon": "archive",
+      "path": "/backup",
+      "permission": "plugin.system-backup.backup:read",
+      "order": 90,
+      "visible": true
+    }
+  ],
+  "config": {
+    "type": "object",
+    "properties": {
+      "backup_dir": {
+        "type": "string",
+        "description": "备份存储目录",
+        "default": "/opt/nmp/backups"
+      },
+      "max_backups": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100,
+        "description": "最大保留备份数量",
+        "default": 10
+      },
+      "auto_backup": {
+        "type": "boolean",
+        "description": "是否启用自动备份",
+        "default": false
+      },
+      "auto_backup_cron": {
+        "type": "string",
+        "description": "自动备份 Cron 表达式",
+        "default": "0 2 * * *"
+      }
+    }
+  }
+}

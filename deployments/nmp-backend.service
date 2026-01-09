@@ -1,0 +1,50 @@
+[Unit]
+Description=NMP Platform Backend Service
+Documentation=https://github.com/your-org/nmp-platform
+After=network.target postgresql.service redis-server.service influxdb.service
+Wants=postgresql.service redis-server.service influxdb.service
+
+[Service]
+Type=simple
+User=nmp
+Group=nmp
+WorkingDirectory=/opt/nmp
+ExecStart=/opt/nmp/bin/nmp-backend --config=/etc/nmp/config.yaml
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutStopSec=30
+Restart=always
+RestartSec=5
+StartLimitInterval=60
+StartLimitBurst=3
+
+# 输出和日志
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=nmp-backend
+
+# 环境变量
+Environment=GIN_MODE=release
+Environment=TZ=Asia/Shanghai
+
+# 安全设置
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/log/nmp /var/lib/nmp /opt/nmp/logs
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+
+# 资源限制
+LimitNOFILE=65536
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,17 @@
+# 忽略大文件和构建产物
+*.tar.gz
+*.zip
+node_modules/
+.next/
+backend/nmp-backend
+backend/server
+backend/server.linux-amd64
+logs/
+*.log
+
+# 忽略配置文件（包含密码）
+backend/configs/config.yaml
+.credentials
+
+# Docker 相关
+docker-compose.override.yml
