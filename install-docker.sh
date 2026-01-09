@@ -215,7 +215,7 @@ check_port() {
             echo -e "    ${CYAN}2${NC}) 使用其他端口安装"
             echo -e "    ${CYAN}3${NC}) 退出安装"
             echo
-            read -p "  请输入选项 [1/2/3]: " choice
+            read -p "  请输入选项 [1/2/3]: " choice </dev/tty
             
             case $choice in
                 1)
@@ -230,7 +230,7 @@ check_port() {
                     log_warn "端口仍被占用，可能被其他服务使用"
                     ;;
                 2)
-                    read -p "  请输入新端口 (1024-65535): " new_port
+                    read -p "  请输入新端口 (1024-65535): " new_port </dev/tty
                     if [[ $new_port =~ ^[0-9]+$ ]] && [[ $new_port -ge 1024 ]] && [[ $new_port -le 65535 ]]; then
                         FRONTEND_PORT=$new_port
                         continue
@@ -250,11 +250,11 @@ check_port() {
             echo -e "    ${CYAN}1${NC}) 使用其他端口安装"
             echo -e "    ${CYAN}2${NC}) 退出安装"
             echo
-            read -p "  请输入选项 [1/2]: " choice
+            read -p "  请输入选项 [1/2]: " choice </dev/tty
             
             case $choice in
                 1)
-                    read -p "  请输入新端口 (1024-65535): " new_port
+                    read -p "  请输入新端口 (1024-65535): " new_port </dev/tty
                     if [[ $new_port =~ ^[0-9]+$ ]] && [[ $new_port -ge 1024 ]] && [[ $new_port -le 65535 ]]; then
                         FRONTEND_PORT=$new_port
                         continue
