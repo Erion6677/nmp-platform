@@ -653,7 +653,7 @@ create_admin_user() {
     # 通过 API 创建管理员
     curl -s -X POST "http://localhost:$BACKEND_PORT/api/v1/auth/register" \
         -H "Content-Type: application/json" \
-        -d '{"username":"admin","password":"admin1234","email":"admin@nmp.local"}' > /dev/null 2>&1 || true
+        -d '{"username":"admin","password":"admin123","email":"admin@nmp.local"}' > /dev/null 2>&1 || true
     
     log_success "管理员账户创建完成"
 }
@@ -672,7 +672,7 @@ save_credentials() {
 
 访问地址: http://$SERVER_IP
 默认账户: admin
-默认密码: admin1234
+默认密码: admin123
 
 PostgreSQL:
   数据库: $DB_NAME
@@ -705,7 +705,7 @@ show_result() {
     echo
     echo -e "  访问地址: ${CYAN}http://$SERVER_IP${NC}"
     echo -e "  默认账户: ${CYAN}admin${NC}"
-    echo -e "  默认密码: ${CYAN}admin1234${NC}"
+    echo -e "  默认密码: ${CYAN}admin123${NC}"
     echo
     echo -e "  ${YELLOW}⚠️ 请首次登录后修改密码！${NC}"
     echo

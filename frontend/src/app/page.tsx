@@ -17,10 +17,11 @@ import {
 import Link from "next/link";
 
 const typeLabels: Record<string, { label: string; color: string }> = {
-  mikrotik: { label: "MikroTik", color: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20" },
-  linux: { label: "Linux", color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20" },
+  router: { label: "路由器", color: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20" },
   switch: { label: "交换机", color: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20" },
   firewall: { label: "防火墙", color: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20" },
+  server: { label: "服务器", color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20" },
+  other: { label: "其他", color: "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20" },
 };
 
 const colorConfig: Record<string, { iconBg: string; iconColor: string; valueColor: string }> = {

@@ -803,8 +803,10 @@ func (h *DeviceHandler) RegisterRoutes(router *gin.RouterGroup) {
 		devices.PUT("/:id/status", h.UpdateDeviceStatus)
 		
 		// 连接测试
-		devices.POST("/test", h.TestConnection)           // 测试新设备连接（不需要先保存）
-		devices.POST("/:id/test", h.TestConnectionByID)   // 测试已保存设备连接
+		devices.POST("/test", h.TestConnection)                    // 测试新设备连接（不需要先保存）
+		devices.POST("/test-connection", h.TestConnection)         // 兼容前端路由别名
+		devices.POST("/:id/test", h.TestConnectionByID)            // 测试已保存设备连接
+		devices.POST("/:id/test-connection", h.TestConnectionByID) // 兼容前端路由别名
 		
 		// 系统信息（主动采集）
 		devices.GET("/:id/info", h.GetSystemInfo)
@@ -853,8 +855,10 @@ func (h *DeviceHandler) RegisterRoutesWithPermission(router *gin.RouterGroup, re
 		devices.PUT("/:id/status", updateMiddleware, h.UpdateDeviceStatus)
 		
 		// 连接测试
-		devices.POST("/test", h.TestConnection)                              // 测试新设备连接（不需要先保存）
-		devices.POST("/:id/test", readMiddleware, h.TestConnectionByID)      // 测试已保存设备连接
+		devices.POST("/test", h.TestConnection)                                   // 测试新设备连接（不需要先保存）
+		devices.POST("/test-connection", h.TestConnection)                        // 兼容前端路由别名
+		devices.POST("/:id/test", readMiddleware, h.TestConnectionByID)           // 测试已保存设备连接
+		devices.POST("/:id/test-connection", readMiddleware, h.TestConnectionByID) // 兼容前端路由别名
 		
 		// 系统信息（主动采集）- 需要设备级别读取权限
 		devices.GET("/:id/info", readMiddleware, h.GetSystemInfo)

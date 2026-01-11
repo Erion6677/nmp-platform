@@ -6,6 +6,7 @@ import (
 	"nmp-platform/internal/config"
 	"nmp-platform/internal/models"
 	"nmp-platform/internal/service"
+	"os"
 	"time"
 
 	"gorm.io/driver/postgres"
@@ -21,9 +22,14 @@ func Connect(cfg *config.DatabaseConfig) (*gorm.DB, error) {
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
 		cfg.Host, cfg.Port, cfg.Username, cfg.Password, cfg.Database, cfg.SSLMode)
 
-	// 配置GORM日志
+	// 配置GORM日志（生产环境使用 Warn 级别，开发环境使用 Info 级别）
+	logLevel := logger.Warn
+	if os.Getenv("GIN_MODE") != "release" {
+		logLevel = logger.Info
+	}
+	
 	gormConfig := &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
+		Logger: logger.Default.LogMode(logLevel),
 		NowFunc: func() time.Time {
 			return time.Now().Local()
 		},
@@ -40,10 +46,13 @@ func Connect(cfg *config.DatabaseConfig) (*gorm.DB, error) {
 		return nil, fmt.Errorf("failed to get underlying sql.DB: %w", err)
 	}
 
-	// 设置连接池参数
-	sqlDB.SetMaxIdleConns(10)
+	// 设置连接池参数（可根据环境调整）
+	// 生产环境建议：MaxIdleConns=25, MaxOpenConns=100
+	// 开发环境建议：MaxIdleConns=10, MaxOpenConns=50
+	sqlDB.SetMaxIdleConns(25)
 	sqlDB.SetMaxOpenConns(100)
 	sqlDB.SetConnMaxLifetime(time.Hour)
+	sqlDB.SetConnMaxIdleTime(10 * time.Minute)
 
 	// 测试连接
 	if err := sqlDB.Ping(); err != nil {

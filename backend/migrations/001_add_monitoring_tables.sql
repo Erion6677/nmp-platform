@@ -3,26 +3,7 @@
 -- Date: 2026-01-06
 
 -- =====================================================
--- 1. 扩展 devices 表（添加 api_port 和 os_type 字段）
--- =====================================================
-ALTER TABLE devices ADD COLUMN IF NOT EXISTS api_port INTEGER DEFAULT 8728;
-ALTER TABLE devices ADD COLUMN IF NOT EXISTS os_type VARCHAR(20) DEFAULT 'mikrotik';
-ALTER TABLE devices ADD COLUMN IF NOT EXISTS proxy_id BIGINT REFERENCES proxies(id);
-
--- 创建索引
-CREATE INDEX IF NOT EXISTS idx_devices_os_type ON devices(os_type);
-CREATE INDEX IF NOT EXISTS idx_devices_proxy_id ON devices(proxy_id);
-
--- =====================================================
--- 2. 简化 interfaces 表（移除不需要的字段）
--- =====================================================
--- 注意：如果表已存在，需要手动处理字段变更
--- 添加 monitored 字段（如果不存在）
-ALTER TABLE interfaces ADD COLUMN IF NOT EXISTS monitored BOOLEAN DEFAULT FALSE;
-CREATE INDEX IF NOT EXISTS idx_interfaces_monitored ON interfaces(monitored);
-
--- =====================================================
--- 3. 创建 proxies 代理表
+-- 1. 创建 proxies 代理表（必须先创建，因为 devices 表引用它）
 -- =====================================================
 CREATE TABLE IF NOT EXISTS proxies (
     id BIGSERIAL PRIMARY KEY,
@@ -53,11 +34,28 @@ CREATE TABLE IF NOT EXISTS proxies (
     deleted_at TIMESTAMPTZ
 );
 
--- 创建索引
+-- 创建代理索引
 CREATE INDEX IF NOT EXISTS idx_proxies_type ON proxies(type);
 CREATE INDEX IF NOT EXISTS idx_proxies_enabled ON proxies(enabled);
 CREATE INDEX IF NOT EXISTS idx_proxies_status ON proxies(status);
 CREATE INDEX IF NOT EXISTS idx_proxies_deleted_at ON proxies(deleted_at);
+
+-- =====================================================
+-- 2. 扩展 devices 表（添加 api_port、os_type 和 proxy_id 字段）
+-- =====================================================
+ALTER TABLE devices ADD COLUMN IF NOT EXISTS api_port INTEGER DEFAULT 8728;
+ALTER TABLE devices ADD COLUMN IF NOT EXISTS os_type VARCHAR(20) DEFAULT 'mikrotik';
+ALTER TABLE devices ADD COLUMN IF NOT EXISTS proxy_id BIGINT REFERENCES proxies(id);
+
+-- 创建设备索引
+CREATE INDEX IF NOT EXISTS idx_devices_os_type ON devices(os_type);
+CREATE INDEX IF NOT EXISTS idx_devices_proxy_id ON devices(proxy_id);
+
+-- =====================================================
+-- 3. 扩展 interfaces 表
+-- =====================================================
+ALTER TABLE interfaces ADD COLUMN IF NOT EXISTS monitored BOOLEAN DEFAULT FALSE;
+CREATE INDEX IF NOT EXISTS idx_interfaces_monitored ON interfaces(monitored);
 
 -- =====================================================
 -- 4. 创建 collector_scripts 采集器配置表
@@ -83,7 +81,7 @@ CREATE TABLE IF NOT EXISTS collector_scripts (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 创建索引
+-- 创建采集器索引
 CREATE INDEX IF NOT EXISTS idx_collector_scripts_status ON collector_scripts(status);
 CREATE INDEX IF NOT EXISTS idx_collector_scripts_enabled ON collector_scripts(enabled);
 
@@ -104,7 +102,7 @@ CREATE TABLE IF NOT EXISTS ping_targets (
     deleted_at TIMESTAMPTZ
 );
 
--- 创建索引
+-- 创建 Ping 目标索引
 CREATE INDEX IF NOT EXISTS idx_ping_targets_device_id ON ping_targets(device_id);
 CREATE INDEX IF NOT EXISTS idx_ping_targets_enabled ON ping_targets(enabled);
 CREATE INDEX IF NOT EXISTS idx_ping_targets_deleted_at ON ping_targets(deleted_at);
@@ -138,7 +136,7 @@ CREATE TABLE IF NOT EXISTS user_device_permissions (
     UNIQUE(user_id, device_id)
 );
 
--- 创建索引
+-- 创建用户设备权限索引
 CREATE INDEX IF NOT EXISTS idx_user_device_permissions_user_id ON user_device_permissions(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_device_permissions_device_id ON user_device_permissions(device_id);
 

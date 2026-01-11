@@ -92,7 +92,7 @@ log_info "创建默认管理员账户..."
 sleep 3
 curl -s -X POST "http://localhost/api/v1/auth/register" \
     -H "Content-Type: application/json" \
-    -d '{"username":"admin","password":"admin1234","email":"admin@nmp.local"}' > /dev/null 2>&1 || true
+    -d '{"username":"admin","password":"admin123","email":"admin@nmp.local"}' > /dev/null 2>&1 || true
 
 echo
 echo -e "${GREEN}============================================${NC}"
@@ -101,7 +101,7 @@ echo -e "${GREEN}============================================${NC}"
 echo
 echo -e "  访问地址: ${CYAN}http://$SERVER_IP${NC}"
 echo -e "  默认账户: ${CYAN}admin${NC}"
-echo -e "  默认密码: ${CYAN}admin1234${NC}"
+echo -e "  默认密码: ${CYAN}admin123${NC}"
 echo
 echo "  管理命令:"
 echo "    docker compose ps       # 查看服务状态"

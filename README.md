@@ -13,7 +13,7 @@ curl -fsSL https://raw.githubusercontent.com/Erion6677/nmp-platform/main/install
 安装完成后：
 - 访问地址: `http://服务器IP`
 - 默认账户: `admin`
-- 默认密码: `admin1234`
+- 默认密码: `admin123`
 
 ### 安装内容
 

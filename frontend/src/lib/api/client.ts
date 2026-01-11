@@ -56,6 +56,9 @@ function buildUrl(url: string, params?: Record<string, string | number | boolean
   return queryString ? `${fullUrl}?${queryString}` : fullUrl;
 }
 
+// 请求超时时间（毫秒）
+const REQUEST_TIMEOUT = 30000;
+
 // 基础请求函数
 async function request<T>(url: string, config: RequestConfig = {}): Promise<T> {
   const { params, ...fetchConfig } = config;
@@ -70,12 +73,19 @@ async function request<T>(url: string, config: RequestConfig = {}): Promise<T> {
     (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
   }
   
+  // 创建 AbortController 用于超时控制
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+  
   try {
     const response = await fetch(buildUrl(url, params), {
       ...fetchConfig,
       headers,
       credentials: 'include',
+      signal: controller.signal,
     });
+    
+    clearTimeout(timeoutId);
     
     // 处理 401 未授权
     if (response.status === 401) {
@@ -102,6 +112,9 @@ async function request<T>(url: string, config: RequestConfig = {}): Promise<T> {
     
     return data;
   } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new Error('请求超时，请检查网络连接');
+    }
     if (error instanceof TypeError && error.message.includes('fetch')) {
       throw new Error('网络连接失败，请检查后端服务是否启动');
     }

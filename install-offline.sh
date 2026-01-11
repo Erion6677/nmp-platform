@@ -329,7 +329,7 @@ create_admin() {
     sleep 2
     curl -s -X POST "http://localhost:8080/api/v1/auth/register" \
         -H "Content-Type: application/json" \
-        -d '{"username":"admin","password":"admin1234","email":"admin@nmp.local"}' > /dev/null 2>&1 || true
+        -d '{"username":"admin","password":"admin123","email":"admin@nmp.local"}' > /dev/null 2>&1 || true
     log_ok "管理员创建完成"
 }
 
@@ -341,7 +341,7 @@ show_result() {
     echo ""
     echo -e "  访问地址: ${BLUE}http://$SERVER_IP${NC}"
     echo -e "  账户: ${BLUE}admin${NC}"
-    echo -e "  密码: ${BLUE}admin1234${NC}"
+    echo -e "  密码: ${BLUE}admin123${NC}"
     echo ""
 }
 

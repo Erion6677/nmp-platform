@@ -147,9 +147,12 @@ func (h *AuthHandler) ChangePassword(c *gin.Context) {
 		return
 	}
 
+	// 支持两种参数格式：驼峰命名和下划线命名
 	var req struct {
-		OldPassword string `json:"old_password" binding:"required"`
-		NewPassword string `json:"new_password" binding:"required"`
+		OldPassword  string `json:"old_password"`
+		NewPassword  string `json:"new_password"`
+		OldPassword2 string `json:"oldPassword"`
+		NewPassword2 string `json:"newPassword"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -160,7 +163,24 @@ func (h *AuthHandler) ChangePassword(c *gin.Context) {
 		return
 	}
 
-	err := h.authService.ChangePassword(userID.(uint), req.OldPassword, req.NewPassword)
+	// 兼容两种参数格式
+	oldPwd := req.OldPassword
+	if oldPwd == "" {
+		oldPwd = req.OldPassword2
+	}
+	newPwd := req.NewPassword
+	if newPwd == "" {
+		newPwd = req.NewPassword2
+	}
+
+	if oldPwd == "" || newPwd == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "old_password and new_password are required",
+		})
+		return
+	}
+
+	err := h.authService.ChangePassword(userID.(uint), oldPwd, newPwd)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -241,6 +261,7 @@ func (h *AuthHandler) RegisterRoutes(router *gin.RouterGroup) {
 		})
 		auth.POST("/register", h.Register)
 		auth.POST("/refresh", h.RefreshToken)
+		auth.POST("/refresh-token", h.RefreshToken) // 兼容前端路由别名
 		auth.POST("/logout", h.Logout)
 		
 		// 需要认证的路由

@@ -36,9 +36,10 @@ export interface UserInfo {
 
 // ==================== 设备相关 ====================
 
-export type DeviceType = 'mikrotik' | 'linux' | 'switch' | 'firewall';
+export type DeviceType = 'router' | 'switch' | 'firewall' | 'server' | 'other';
 export type DeviceStatus = 'online' | 'offline' | 'unknown' | 'error';
 export type InterfaceStatus = 'up' | 'down' | 'unknown';
+export type DeviceOSType = 'mikrotik' | 'linux';
 
 export interface Device {
   id: number;
